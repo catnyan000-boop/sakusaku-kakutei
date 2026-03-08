@@ -16,6 +16,7 @@ export default function SignupPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,15 +31,51 @@ export default function SignupPage() {
     }
     setLoading(true);
     const supabase = createClient();
-    const { error: authError } = await supabase.auth.signUp({ email, password });
+    const { data, error: authError } = await supabase.auth.signUp({ email, password });
+    setLoading(false);
+
     if (authError) {
       setError(authError.message);
-      setLoading(false);
       return;
     }
-    router.push('/setup');
-    router.refresh();
+
+    // セッションがある = メール確認不要（Supabase設定で無効の場合）
+    if (data.session) {
+      router.push('/setup');
+      router.refresh();
+      return;
+    }
+
+    // セッションがない = メール確認が必要
+    setEmailSent(true);
   };
+
+  if (emailSent) {
+    return (
+      <AuthLayout>
+        <Card>
+          <div className="space-y-4 text-center">
+            <div className="text-4xl">✉️</div>
+            <h2 className="text-xl font-semibold" style={{ color: 'var(--color-heading)' }}>確認メールを送信しました</h2>
+            <p className="text-sm" style={{ color: 'var(--color-label)' }}>
+              <strong>{email}</strong> に確認メールを送信しました。<br />
+              メール内のリンクをクリックして登録を完了してください。
+            </p>
+            <p className="text-xs text-gray-400">
+              メールが届かない場合は、迷惑メールフォルダを確認してください。
+            </p>
+            <Link
+              href="/login"
+              className="inline-block text-sm font-medium"
+              style={{ color: 'var(--color-primary)' }}
+            >
+              ログインページへ戻る
+            </Link>
+          </div>
+        </Card>
+      </AuthLayout>
+    );
+  }
 
   return (
     <AuthLayout>

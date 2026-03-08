@@ -22,9 +22,13 @@ export default function LoginPage() {
     setLoading(true);
     const supabase = createClient();
     const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
+    setLoading(false);
     if (authError) {
-      setError('メールアドレスまたはパスワードが正しくありません');
-      setLoading(false);
+      if (authError.message === 'Email not confirmed') {
+        setError('メールアドレスが未確認です。確認メールのリンクをクリックしてください。');
+      } else {
+        setError('メールアドレスまたはパスワードが正しくありません');
+      }
       return;
     }
     router.push('/dashboard');

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { AuthLayout } from '@/components/layout/AuthLayout';
 import { Card } from '@/components/ui/Card';
@@ -10,7 +9,6 @@ import { Select } from '@/components/ui/Select';
 import { Button } from '@/components/ui/Button';
 
 export default function SetupPage() {
-  const router = useRouter();
   const [formData, setFormData] = useState({
     fullName: '',
     businessName: '',
@@ -36,7 +34,7 @@ export default function SetupPage() {
       setLoading(false);
       return;
     }
-    const { error: dbError } = await supabase.from('profiles').insert({
+    const { error: dbError } = await supabase.from('profiles').upsert({
       id: user.id,
       full_name: formData.fullName.trim(),
       business_name: formData.businessName.trim(),
@@ -45,12 +43,13 @@ export default function SetupPage() {
       consumption_tax_type: formData.consumptionTaxType,
     });
     if (dbError) {
-      setError('プロフィールの保存に失敗しました');
+      console.error('Profile save error:', dbError);
+      setError(`プロフィールの保存に失敗しました: ${dbError.message}`);
       setLoading(false);
       return;
     }
-    router.push('/dashboard');
-    router.refresh();
+    // 完全リロードでミドルウェアを再実行させる
+    window.location.href = '/dashboard';
   };
 
   return (
