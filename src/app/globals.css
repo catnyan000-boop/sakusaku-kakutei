@@ -2,26 +2,46 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap');
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  /* Page */
+  --color-page-bg: #F0FDFA;
+
+  /* Sidebar */
+  --color-sidebar-bg: #F0FDFA;
+  --color-sidebar-border: #99F6E4;
+  --color-sidebar-title: #134E4A;
+  --color-sidebar-text: #115E59;
+  --color-sidebar-active-bg: #CCFBF1;
+  --color-sidebar-active-text: #0F766E;
+
+  /* Headings & numbers */
+  --color-heading: #0F172A;
+  --color-value: #0F172A;
+
+  /* Primary action */
+  --color-primary: #0D9488;
+  --color-primary-hover: #0F766E;
+
+  /* Accent green (success) */
+  --color-accent: #059669;
+
+  /* Danger */
+  --color-danger: #DC2626;
+  --color-danger-hover: #B91C1C;
+
+  /* Labels & borders */
+  --color-label: #475569;
+  --color-card-border: #E2E8F0;
+
+  /* Charts */
+  --color-chart-revenue: #0D9488;
+  --color-chart-expense: #F87171;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+  color: var(--color-heading);
+  background: var(--color-page-bg);
+  font-family: 'Noto Sans JP', sans-serif;
 }
