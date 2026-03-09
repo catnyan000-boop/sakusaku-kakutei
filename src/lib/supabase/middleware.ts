@@ -28,18 +28,35 @@ export async function updateSession(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   const pathname = request.nextUrl.pathname;
 
-  // Public pages
-  const isPublic = pathname === '/' || ['/login', '/signup', '/auth'].some((p) => pathname.startsWith(p));
+  // Landing page: logged-in → dashboard, otherwise show LP
+  if (pathname === '/') {
+    if (user) {
+      const url = request.nextUrl.clone();
+      url.pathname = '/dashboard';
+      return NextResponse.redirect(url);
+    }
+    return supabaseResponse;
+  }
 
-  // Not logged in → redirect to login
+  // Public pages (login, signup, auth callback)
+  const isPublic = ['/login', '/signup', '/auth'].some((p) => pathname.startsWith(p));
+
+  // Not logged in → redirect to login (except public pages)
   if (!user && !isPublic) {
     const url = request.nextUrl.clone();
     url.pathname = '/login';
     return NextResponse.redirect(url);
   }
 
+  // Logged in on public page → redirect to dashboard
+  if (user && isPublic) {
+    const url = request.nextUrl.clone();
+    url.pathname = '/dashboard';
+    return NextResponse.redirect(url);
+  }
+
   // Logged in → check profile exists
-  if (user && !isPublic && pathname !== '/setup') {
+  if (user && pathname !== '/setup') {
     const { data: profile } = await supabase
       .from('profiles')
       .select('id')
@@ -51,13 +68,6 @@ export async function updateSession(request: NextRequest) {
       url.pathname = '/setup';
       return NextResponse.redirect(url);
     }
-  }
-
-  // Logged in + trying to access landing/login/signup → redirect to dashboard
-  if (user && (pathname === '/' || pathname === '/login' || pathname === '/signup')) {
-    const url = request.nextUrl.clone();
-    url.pathname = '/dashboard';
-    return NextResponse.redirect(url);
   }
 
   return supabaseResponse;
