@@ -110,6 +110,15 @@ export interface Template {
   updatedAt: string;
 }
 
+export interface TemplateInput {
+  name: string;
+  debitAccountId: string;
+  creditAccountId: string;
+  amount: number | null;
+  taxIncluded: boolean;
+  description: string;
+}
+
 // --- Tax Settings ---
 
 export interface TaxSettings {

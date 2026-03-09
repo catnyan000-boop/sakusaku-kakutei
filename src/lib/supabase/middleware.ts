@@ -29,8 +29,7 @@ export async function updateSession(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   // Public pages
-  const publicPaths = ['/login', '/signup', '/auth'];
-  const isPublic = publicPaths.some((p) => pathname.startsWith(p));
+  const isPublic = pathname === '/' || ['/login', '/signup', '/auth'].some((p) => pathname.startsWith(p));
 
   // Not logged in → redirect to login
   if (!user && !isPublic) {
@@ -54,8 +53,8 @@ export async function updateSession(request: NextRequest) {
     }
   }
 
-  // Logged in + trying to access login/signup → redirect to dashboard
-  if (user && (pathname === '/login' || pathname === '/signup')) {
+  // Logged in + trying to access landing/login/signup → redirect to dashboard
+  if (user && (pathname === '/' || pathname === '/login' || pathname === '/signup')) {
     const url = request.nextUrl.clone();
     url.pathname = '/dashboard';
     return NextResponse.redirect(url);

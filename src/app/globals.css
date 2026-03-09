@@ -45,3 +45,10 @@ body {
   background: var(--color-page-bg);
   font-family: 'Noto Sans JP', sans-serif;
 }
+
+/* Mobile touch targets */
+@media (max-width: 639px) {
+  button, a[role="button"], select, input[type="checkbox"] {
+    min-height: 44px;
+  }
+}

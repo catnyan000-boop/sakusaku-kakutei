@@ -95,7 +95,9 @@ export default function TransactionsPage() {
           <p className="text-sm" style={{ color: 'var(--color-label)' }}>
             {loading ? '読み込み中...' : `${transactions.length}件`}
           </p>
-          <div className="-mx-6 sm:mx-0 overflow-x-auto sm:rounded-xl border border-gray-100 shadow-md">
+
+          {/* デスクトップ: テーブル表示 */}
+          <div className="hidden sm:block -mx-6 sm:mx-0 overflow-x-auto sm:rounded-xl border border-gray-100 shadow-md">
             <table className="min-w-[700px] w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
@@ -127,6 +129,37 @@ export default function TransactionsPage() {
                 ))}
               </tbody>
             </table>
+          </div>
+
+          {/* モバイル: カード表示 */}
+          <div className="sm:hidden space-y-3">
+            {transactions.map((tx) => (
+              <div
+                key={tx.id}
+                className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 space-y-2"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-gray-400">{formatDate(tx.date)}</span>
+                  <span className="text-sm font-mono font-semibold text-gray-900">{formatCurrency(tx.amount)}</span>
+                </div>
+                <div className="text-sm text-gray-700">
+                  <span className="font-medium">{getAccountById(tx.debitAccountId)?.name || tx.debitAccountId}</span>
+                  <span className="mx-1.5 text-gray-300">{' \u2192 '}</span>
+                  <span className="font-medium">{getAccountById(tx.creditAccountId)?.name || tx.creditAccountId}</span>
+                </div>
+                {tx.description && (
+                  <p className="text-xs text-gray-400 truncate">{tx.description}</p>
+                )}
+                <div className="flex items-center gap-4 pt-1 border-t border-gray-50">
+                  <Link href={`/transactions/${tx.id}/edit`} className="text-xs text-teal-600 font-medium">
+                    編集
+                  </Link>
+                  <button onClick={() => setDeleteId(tx.id)} className="text-xs text-red-600 font-medium">
+                    削除
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         </>
       )}

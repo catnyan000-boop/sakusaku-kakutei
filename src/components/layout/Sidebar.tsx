@@ -8,6 +8,7 @@ import { createClient } from '@/lib/supabase/client';
 const NAV_ITEMS = [
   { href: '/dashboard', label: 'ダッシュボード' },
   { href: '/transactions', label: '仕訳' },
+  { href: '/templates', label: 'テンプレート' },
   { href: '/search', label: '検索' },
   { href: '/ledger', label: '元帳' },
   { href: '/import', label: 'インポート' },

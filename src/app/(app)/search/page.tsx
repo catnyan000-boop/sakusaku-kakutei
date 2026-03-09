@@ -69,7 +69,8 @@ export default function SearchPage() {
             <span>合計: <strong>{formatCurrency(totalAmount)}</strong></span>
           </div>
 
-          <div className="-mx-6 sm:mx-0 overflow-x-auto sm:rounded-xl border border-gray-100 shadow-md">
+          {/* デスクトップ: テーブル表示 */}
+          <div className="hidden sm:block -mx-6 sm:mx-0 overflow-x-auto sm:rounded-xl border border-gray-100 shadow-md">
             <table className="min-w-[700px] w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
@@ -97,6 +98,34 @@ export default function SearchPage() {
                 )}
               </tbody>
             </table>
+          </div>
+
+          {/* モバイル: カード表示 */}
+          <div className="sm:hidden space-y-3">
+            {results.map((tx) => (
+              <div
+                key={tx.id}
+                className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 space-y-2"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-gray-400">{formatDate(tx.date)}</span>
+                  <span className="text-sm font-mono font-semibold text-gray-900">{formatCurrency(tx.amount)}</span>
+                </div>
+                <div className="text-sm text-gray-700">
+                  <span className="font-medium">{getAccountById(tx.debitAccountId)?.name}</span>
+                  <span className="mx-1.5 text-gray-300">{' \u2192 '}</span>
+                  <span className="font-medium">{getAccountById(tx.creditAccountId)?.name}</span>
+                </div>
+                {tx.description && (
+                  <p className="text-xs text-gray-400 truncate">{tx.description}</p>
+                )}
+              </div>
+            ))}
+            {results.length === 0 && (
+              <div className="text-center py-8 text-sm text-gray-400">
+                該当する仕訳がありません
+              </div>
+            )}
           </div>
         </div>
       )}
