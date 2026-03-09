@@ -1,4 +1,4 @@
-import { Transaction, TransactionInput, Profile, ProfileInput } from '@/lib/types';
+import { Transaction, TransactionInput, Profile, ProfileInput, KateiAnbun, KateiAnbunInput, TaxSettings, TaxSettingsInput } from '@/lib/types';
 
 export interface ITransactionRepository {
   getAll(): Promise<Transaction[]>;
@@ -21,4 +21,15 @@ export interface IProfileRepository {
   getProfile(): Promise<Profile | null>;
   createProfile(input: ProfileInput): Promise<Profile>;
   updateProfile(input: Partial<ProfileInput>): Promise<Profile>;
+}
+
+export interface IKateiAnbunRepository {
+  getAll(): Promise<KateiAnbun[]>;
+  upsert(input: KateiAnbunInput): Promise<KateiAnbun>;
+  delete(id: string): Promise<void>;
+}
+
+export interface ITaxSettingsRepository {
+  get(): Promise<TaxSettings | null>;
+  upsert(input: TaxSettingsInput): Promise<TaxSettings>;
 }

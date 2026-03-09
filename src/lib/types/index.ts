@@ -89,6 +89,12 @@ export interface KateiAnbun {
   updatedAt: string;
 }
 
+export interface KateiAnbunInput {
+  accountId: string;
+  businessRatio: number;
+  note: string;
+}
+
 // --- Template ---
 
 export interface Template {
@@ -112,8 +118,84 @@ export interface TaxSettings {
   fiscalYearStart: string;
   taxMethod: 'exempt' | 'simplified' | 'standard';
   simplifiedBusinessType: number | null;
+  basicDeduction: number;
+  socialInsurance: number;
+  lifeInsurance: number;
+  earthquakeInsurance: number;
+  spouseDeduction: number;
+  dependentsDeduction: number;
+  otherDeduction: number;
+  blueReturnDeduction: number;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface TaxSettingsInput {
+  basicDeduction?: number;
+  socialInsurance?: number;
+  lifeInsurance?: number;
+  earthquakeInsurance?: number;
+  spouseDeduction?: number;
+  dependentsDeduction?: number;
+  otherDeduction?: number;
+  blueReturnDeduction?: number;
+}
+
+// --- Report Types ---
+
+export interface PLRow {
+  accountId: string;
+  accountName: string;
+  rawAmount: number;
+  businessRatio: number;
+  adjustedAmount: number;
+}
+
+export interface PLReport {
+  revenueRows: PLRow[];
+  costRow: PLRow | null;
+  expenseRows: PLRow[];
+  totalRevenue: number;
+  totalCost: number;
+  grossProfit: number;
+  totalExpense: number;
+  profit: number;
+}
+
+export interface BSRow {
+  accountId: string;
+  accountName: string;
+  amount: number;
+}
+
+export interface BSReport {
+  assetRows: BSRow[];
+  liabilityRows: BSRow[];
+  equityRows: BSRow[];
+  totalAssets: number;
+  totalLiabilities: number;
+  totalEquity: number;
+}
+
+export interface MonthlyTableRow {
+  month: string;
+  revenue: number;
+  cost: number;
+  expense: number;
+  profit: number;
+}
+
+export interface TaxEstimate {
+  businessIncome: number;
+  blueReturnDeduction: number;
+  taxableBusinessIncome: number;
+  totalDeductions: number;
+  taxableIncome: number;
+  incomeTax: number;
+  reconstructionTax: number;
+  residentTax: number;
+  businessTax: number;
+  totalTax: number;
 }
 
 // --- CSV Import ---
