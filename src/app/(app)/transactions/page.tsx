@@ -6,7 +6,6 @@ import { useRepository } from '@/providers/RepositoryProvider';
 import { Transaction } from '@/lib/types';
 import { getAccountById } from '@/lib/constants/accounts';
 import { formatCurrency, formatDate } from '@/lib/utils/format';
-import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { Toast } from '@/components/ui/Toast';
 
