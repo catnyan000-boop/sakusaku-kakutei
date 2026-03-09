@@ -1,9 +1,11 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRepository } from '@/providers/RepositoryProvider';
 import { getAccountById, ACCOUNTS } from '@/lib/constants/accounts';
 import { Card } from '@/components/ui/Card';
+import { Input } from '@/components/ui/Input';
+import { Select } from '@/components/ui/Select';
 import { Button } from '@/components/ui/Button';
 import { Toast } from '@/components/ui/Toast';
 
@@ -27,10 +29,56 @@ function accountNameToId(name: string): string | null {
 }
 
 export default function SettingsPage() {
-  const { transactionRepo } = useRepository();
+  const { transactionRepo, profileRepo } = useRepository();
   const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [profileLoading, setProfileLoading] = useState(true);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  const [profile, setProfile] = useState({
+    fullName: '',
+    businessName: '',
+    industry: '',
+    taxReturnType: 'blue' as 'blue' | 'white',
+    consumptionTaxType: 'exempt' as 'exempt' | 'simplified' | 'standard',
+  });
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const p = await profileRepo.getProfile();
+        if (p) {
+          setProfile({
+            fullName: p.fullName,
+            businessName: p.businessName,
+            industry: p.industry,
+            taxReturnType: p.taxReturnType,
+            consumptionTaxType: p.consumptionTaxType,
+          });
+        }
+      } finally {
+        setProfileLoading(false);
+      }
+    })();
+  }, []);
+
+  const handleSaveProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!profile.fullName.trim()) {
+      setToast({ message: '氏名を入力してください', type: 'error' });
+      return;
+    }
+    setSaving(true);
+    try {
+      await profileRepo.updateProfile(profile);
+      setToast({ message: '設定を保存しました', type: 'success' });
+    } catch {
+      setToast({ message: '保存に失敗しました', type: 'error' });
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const handleExport = async () => {
     setLoading(true);
@@ -196,10 +244,52 @@ export default function SettingsPage() {
     <div className="space-y-6">
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
-      <Card title="設定">
-        <p className="text-sm text-gray-500 py-4 text-center">
-          設定機能は現在開発中です。
-        </p>
+      <Card title="プロフィール">
+        {profileLoading ? (
+          <p className="text-sm text-gray-500 py-4 text-center">読み込み中...</p>
+        ) : (
+          <form onSubmit={handleSaveProfile} className="space-y-4">
+            <Input
+              label="氏名 *"
+              value={profile.fullName}
+              onChange={(e) => setProfile({ ...profile, fullName: e.target.value })}
+              required
+            />
+            <Input
+              label="屋号"
+              value={profile.businessName}
+              onChange={(e) => setProfile({ ...profile, businessName: e.target.value })}
+            />
+            <Input
+              label="業種"
+              value={profile.industry}
+              onChange={(e) => setProfile({ ...profile, industry: e.target.value })}
+              placeholder="例：ITコンサルティング"
+            />
+            <Select
+              label="申告方法"
+              options={[
+                { value: 'blue', label: '青色申告' },
+                { value: 'white', label: '白色申告' },
+              ]}
+              value={profile.taxReturnType}
+              onChange={(e) => setProfile({ ...profile, taxReturnType: e.target.value as 'blue' | 'white' })}
+            />
+            <Select
+              label="消費税"
+              options={[
+                { value: 'exempt', label: '免税事業者' },
+                { value: 'simplified', label: '簡易課税' },
+                { value: 'standard', label: '本則課税' },
+              ]}
+              value={profile.consumptionTaxType}
+              onChange={(e) => setProfile({ ...profile, consumptionTaxType: e.target.value as 'exempt' | 'simplified' | 'standard' })}
+            />
+            <Button type="submit" disabled={saving} className="w-full">
+              {saving ? '保存中...' : '設定を保存'}
+            </Button>
+          </form>
+        )}
       </Card>
 
       <Card title="データバックアップ">
